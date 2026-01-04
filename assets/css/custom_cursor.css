@@ -1,0 +1,17 @@
+/* Magic Custom Cursor - Removed per request */
+
+/* Hide default cursor only if you want full takeover, but usually blending is safer */
+/* body { cursor: none; } */
+/* Let's keep default cursor but add this follower for "coolness" without usability risk */
+
+/* Icon Resizing - Even Bigger */
+.home__social-link {
+    font-size: 2rem !important;
+    /* Increased from 1.5rem */
+    padding: .5rem;
+}
+
+.home__scroll-icon {
+    font-size: 3rem !important;
+    /* Increased from 2.5rem */
+}
