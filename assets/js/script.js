@@ -17,49 +17,73 @@ const projects = [
     {
         name: "Robot Navigation",
         category: "design",
+        date: "Jul 2024 - Aug 2024",
+        description: "Autonomous navigation system with SLAM and obstacle avoidance for mobile robots.",
         image: "assets/img/robot.gif",
+        tags: ["ROS2", "Python", "Lidar", "SLAM"],
         links: { code: "https://github.com/Jawad0695/Robot_localization_and_mapping" }
     },
     {
         name: "Robotic Arm YOLOv8",
         category: "design",
+        date: "Jan 2024 - Mar 2024",
+        description: "6-DOF robotic arm integrated with real-time vision using YOLOv8 for gesture mimicking.",
         image: "assets/img/arm.gif",
+        tags: ["YOLOv8", "OpenCV", "Python", "Robotics"],
         links: { code: "https://github.com/Jawad0695/Human-Arm-Mimicking-Robot" }
     },
     {
         name: "Lane Detection",
         category: "web",
+        date: "Sep 2023 - Oct 2023",
+        description: "Real-time lane line detection for autonomous driving using computer vision algorithms.",
         image: "assets/img/lane.gif",
+        tags: ["OpenCV", "Python", "Computer Vision"],
         links: { code: "https://github.com/Jawad0695/Lane-Detection" }
     },
     {
         name: "RTAB-Map Mapping",
         category: "design",
+        date: "Nov 2023 - Dec 2023",
+        description: "3D environment mapping using RTAB-Map and RGB-D cameras for indoor exploration.",
         image: "assets/img/rtab.png",
+        tags: ["RTAB-Map", "ROS", "RGB-D", "3D"],
         links: { code: "https://github.com/Jawad0695/Robot_Rtab_maping" }
     },
     {
         name: "Mobile Robot Design",
         category: "web",
+        date: "May 2023 - Jun 2023",
+        description: "CAD modeling and simulation of a four-wheeled mobile platform in SolidWorks and Gazebo.",
         image: "assets/img/ROBOTICS.gif",
+        tags: ["SolidWorks", "Gazebo", "URDF", "CAD"],
         links: { code: "https://github.com/Jawad0695/robot-cad" }
     },
     {
         name: "Multi Object Tracking",
         category: "web",
+        date: "Dec 2023 - Jan 2024",
+        description: "Efficient multi-object tracking system using SORT and DeepSORT algorithms.",
         image: "assets/img/object.gif",
+        tags: ["Python", "OpenCV", "Kalman Filter"],
         links: { code: "https://github.com/Jawad0695/Multi-object-Tracking" }
     },
     {
         name: "ORBSLAM3",
         category: "design",
-        image: "assets/img/orbslam.gif", /* Placeholder image */
+        date: "Feb 2024 - Present",
+        description: "Implementation of ORB-SLAM3 for monocular and stereo visual localization in ROS2.",
+        image: "assets/img/orbslam.gif",
+        tags: ["ORB-SLAM3", "C++", "ROS2", "SLAM"],
         links: { code: "https://github.com/Jawad0695/ORB-SLAM3-ROS2-Docker" }
     },
     {
         name: "A* Algorithm",
         category: "design",
-        image: "assets/img/astar.gif", /* Placeholder image */
+        date: "Mar 2024",
+        description: "Path planning simulation implementing the A* algorithm for grid-based search.",
+        image: "assets/img/astar.gif",
+        tags: ["A*", "C++", "ROS2", "Path Planning"],
         links: { code: "https://github.com/Jawad0695/Astar-algorithum-in-ros2" }
     }
 ];
@@ -81,26 +105,133 @@ function showSkills(skills) {
 
 /* =============== RENDER PROJECTS =============== */
 function showProjects(projects) {
-    let projectsContainer = document.querySelector(".work__container");
-    if (!projectsContainer) return;
-    let projectHTML = "";
-    projects.forEach(project => {
-        // Check if image source is a video (simple check for now)
-        let isVideo = project.image.endsWith('.mp4') || project.image.endsWith('.webm');
-
-        let mediaHTML = isVideo
-            ? `<video src="${project.image}" autoplay muted loop playsinline class="work__bg"></video>`
-            : `<img src="${project.image}" alt="${project.name}" class="work__bg">`;
-
-        projectHTML += `
-        <a href="${project.links.code}" target="_blank" class="work__card mix ${project.category}">
-            ${mediaHTML}
-            <div class="work__overlay">
-                <h3 class="work__title">${project.name}</h3>
+    let trackEl = document.getElementById('projectsTrack');
+    if (!trackEl) return;
+    let html = '';
+    projects.forEach((project, i) => {
+        let tagsHTML = project.tags.map(tag => `<span class="work__tag">${tag}</span>`).join('');
+        html += `
+        <div class="featured-card" data-index="${i}">
+            <div class="featured-card__img-wrap">
+                <img src="${project.image}" alt="${project.name}" class="featured-card__img" loading="lazy">
+                <span class="featured-card__badge">${project.date}</span>
             </div>
-        </a>`
+            <div class="featured-card__body">
+                <h3 class="featured-card__title">${project.name}</h3>
+                <p class="featured-card__desc">${project.description}</p>
+                <button class="featured-card__read-more" onclick="openProjectModal(${i})">Read More</button>
+                <div class="featured-card__tags">${tagsHTML}</div>
+                <div class="featured-card__btns">
+                    <a href="${project.links.code}" target="_blank" class="featured-card__btn featured-card__btn--primary">
+                        <i class='bx bxl-github'></i> GitHub
+                    </a>
+                </div>
+            </div>
+        </div>`;
     });
-    projectsContainer.innerHTML = projectHTML;
+    trackEl.innerHTML = html;
+    initFeaturedCarousel(projects.length);
+}
+
+/* =============== PROJECT MODAL =============== */
+function openProjectModal(index) {
+    const project = projects[index];
+    if (!project) return;
+
+    const tagsHTML = project.tags.map(tag => `<span class="work__tag">${tag}</span>`).join('');
+
+    const modal = document.createElement('div');
+    modal.className = 'project-modal-overlay';
+    modal.innerHTML = `
+        <div class="project-modal">
+            <button class="project-modal__close" onclick="this.closest('.project-modal-overlay').remove()">
+                <i class='bx bx-x'></i>
+            </button>
+            <div class="project-modal__img-wrap">
+                <img src="${project.image}" alt="${project.name}" class="project-modal__img">
+            </div>
+            <div class="project-modal__body">
+                <h3 class="project-modal__title">${project.name}</h3>
+                <span class="project-modal__date">${project.date}</span>
+                <p class="project-modal__desc">${project.description}</p>
+                <div class="project-modal__tags">${tagsHTML}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    /* Close on backdrop click */
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.remove();
+    });
+
+    /* Prevent body scroll */
+    document.body.style.overflow = 'hidden';
+    modal.addEventListener('click', () => {}, { once: false });
+
+    /* Restore scroll when closed */
+    const observer = new MutationObserver(() => {
+        if (!document.body.contains(modal)) {
+            document.body.style.overflow = '';
+            observer.disconnect();
+        }
+    });
+    observer.observe(document.body, { childList: true });
+}
+
+/* =============== FEATURED CAROUSEL ENGINE =============== */
+function initFeaturedCarousel(total) {
+    let current = 0;
+    const track = document.getElementById('projectsTrack');
+    const allCards = () => Array.from(track.querySelectorAll('.featured-card'));
+    const prevBtn = document.getElementById('featuredPrev');
+    const nextBtn = document.getElementById('featuredNext');
+    const dotsWrap = document.getElementById('featuredDots');
+
+    /* Build dots */
+    let dotsHTML = '';
+    for (let i = 0; i < total; i++) {
+        dotsHTML += `<span class="featured-dot" data-i="${i}"></span>`;
+    }
+    dotsWrap.innerHTML = dotsHTML;
+
+    function goTo(n) {
+        current = ((n % total) + total) % total;
+        const cardEls = allCards();
+
+        /* Assign position classes */
+        cardEls.forEach((card, i) => {
+            card.classList.remove('is-prev', 'is-active', 'is-next', 'is-hidden');
+            const diff = ((i - current) % total + total) % total;
+            if (diff === 0)           card.classList.add('is-active');
+            else if (diff === 1)      card.classList.add('is-next');
+            else if (diff === total - 1) card.classList.add('is-prev');
+            else                       card.classList.add('is-hidden');
+        });
+
+        /* Dots */
+        dotsWrap.querySelectorAll('.featured-dot').forEach((d, i) =>
+            d.classList.toggle('active', i === current)
+        );
+    }
+
+    goTo(0);
+
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+
+    dotsWrap.addEventListener('click', e => {
+        if (e.target.matches('.featured-dot')) goTo(+e.target.dataset.i);
+    });
+
+    /* Click side cards to navigate */
+    track.addEventListener('click', e => {
+        const card = e.target.closest('.featured-card');
+        if (!card) return;
+        if (card.classList.contains('is-next')) goTo(current + 1);
+        if (card.classList.contains('is-prev')) goTo(current - 1);
+    });
 }
 
 // Initialize Data
@@ -138,25 +269,8 @@ function scrollActive() {
 window.addEventListener('scroll', scrollActive)
 
 
-/* =============== MIXITUP FILTER PORTFOLIO =============== */
-let mixerPortfolio = mixitup('.work__container', {
-    selectors: {
-        target: '.work__card'
-    },
-    animation: {
-        duration: 300
-    }
-});
-
-/* Link active work */
-const linkWork = document.querySelectorAll('.work__item')
-
-function activeWork() {
-    linkWork.forEach(l => l.classList.remove('active-work'))
-    this.classList.add('active-work')
-}
-
-linkWork.forEach(l => l.addEventListener('click', activeWork))
+/* Removed MixItUp filter - replaced with custom carousel */
+/* const linkWork = document.querySelectorAll('.work__item') */
 
 
 /* =============== SCROLL REVEAL ANIMATION =============== */
@@ -170,7 +284,7 @@ const sr = ScrollReveal({
 
 sr.reveal(`.home__data`)
 sr.reveal(`.home__handle`, { delay: 700 })
-sr.reveal(`.home__social, .home__scroll`, { delay: 900, origin: 'bottom' })
+sr.reveal(`.sidebar, .home__scroll`, { delay: 900, origin: 'bottom' })
 sr.reveal(`.about__img`, { origin: 'left' })
 sr.reveal(`.about__data`, { origin: 'right' })
 sr.reveal(`.skills__content`, { origin: 'bottom' })
@@ -183,7 +297,7 @@ sr.reveal(`.footer`, { origin: 'bottom' })
 /* Magic Cursor Follower - REMOVED per request */
 
 /* =============== EXPERIENCE TOGGLE =============== */
-const experienceItems = document.querySelectorAll('.timeline-content--expandable');
+const experienceItems = document.querySelectorAll('.experience__item');
 
 experienceItems.forEach(item => {
     item.addEventListener('click', () => {
